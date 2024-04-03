@@ -9,10 +9,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-release = 'v0.38.0-alpha2'
+#release = 'v0.38.0-alpha2'
+release = 'v1.0.0-alpha2'
+fig_title = 'Rotating Nodes Test'
 
 #FIXME: figure out in which timezone prometheus was running to adjust to UTC.
-tz = pytz.timezone('America/Sao_Paulo')
+tz = pytz.timezone('Europe/Zurich')
 
 if len(sys.argv) != 2:
     print('Pls provide the raw.csv file')
@@ -60,21 +62,21 @@ for (key,ax) in zip(groups.groups.keys(), [axes] if ncols == 1 else axes.flatten
         endTime = subGroup.block_time.max()
         localStartTime = tz.localize(datetime.fromtimestamp(startTime)).astimezone(pytz.utc)
         localEndTime  = tz.localize(datetime.fromtimestamp(endTime)).astimezone(pytz.utc)
-        subGroup.block_time.apply(lambda x: x - startTime )
+        subGroupMod = subGroup.block_time.apply(lambda x: x - startTime )
         mean = subGroup.duration_ns.mean()
         print('exp', key ,'start', localEndTime.strftime("%Y-%m-%dT%H:%M:%SZ"), 'end', localStartTime.strftime("%Y-%m-%dT%H:%M:%SZ"), 'duration', endTime - startTime, "mean", mean)
 
         (con,rate) = subKey
         label = 'c='+str(con) + ' r='+ str(rate)
         ax.axhline(y = mean, color = 'r', linestyle = '-', label="mean")
-        ax.scatter(subGroup.block_time, subGroup.duration_ns, label=label)
+        ax.scatter(subGroupMod, subGroup.duration_ns, label=label)
     ax.legend()
 
     #Save individual axes
     extent = ax.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
-    fig.savefig(os.path.join(path,'e_'+key + '.png'), bbox_inches=extent.expanded(1.2, 1.3))
+    fig.savefig(os.path.join(path,'e_'+key + '.png'), bbox_inches=extent.expanded(1.4, 1.5))
 
-fig.suptitle('Vote Extensions Testnet - ' + release)
+fig.suptitle(fig_title + ' - ' + release)
 
 # Save the figure with subplots
 fig.savefig(os.path.join(path,'all_experiments.png'))
@@ -112,9 +114,9 @@ for (key,ax) in zip(groups.groups.keys(), [axes] if ncols == 1 else axes.flatten
 
     #Save individual axes
     extent = ax.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
-    fig.savefig(os.path.join(path,'c'+str(con) + 'r'+ str(rate) + '.png'), bbox_inches=extent.expanded(1.2, 1.3))
+    fig.savefig(os.path.join(path,'c'+str(con) + 'r'+ str(rate) + '.png'), bbox_inches=extent.expanded(1.4, 1.5))
 
-fig.suptitle('Vote Extensions Testnet - ' + release)
+fig.suptitle(fig_title + ' - ' + release)
 
 
 # Save the figure with subplots

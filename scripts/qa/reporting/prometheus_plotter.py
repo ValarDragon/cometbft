@@ -16,7 +16,8 @@ from urllib.parse import urljoin
 from prometheus_pandas import query
 
 #release = 'v0.37.0-alpha.2'
-release = 'v0.38.0-alpha.2'
+#release = 'v0.38.0-alpha.2'
+release = 'v1.0.0-alpha.2'
 path = os.path.join('imgs')
 prometheus = query.Prometheus('http://localhost:9090')
 
@@ -28,7 +29,8 @@ prometheus = query.Prometheus('http://localhost:9090')
 #window_size = dict(seconds=127) #baseline
 #window_size = dict(seconds=115) #CMT v0.38.0-alpha.2 (200 nodes)
 #window_size = dict(hours=1, minutes=46) #CMT v0.38.0-alpha.2 (rotating)
-window_size = dict(seconds=150) #CMT v0.38.0-alpha.2 (ve baseline)
+#window_size = dict(seconds=150) #CMT v0.38.0-alpha.2 (ve baseline)
+window_size = dict(hours=1, minutes=46) #v1.0.0-alpha.2 (rotating)
 
 ext_window_size = dict(seconds=200)
 
@@ -44,10 +46,11 @@ ext_window_size = dict(seconds=200)
 #left_end = '2023-05-22T09:39:20Z' #CMT v0.38.0-alpha.2 - 200 nodes
 #left_end = '2022-10-10T15:47:15Z' #TM v0.37.0-alpha.2 - rotating
 #left_end = '2023-05-23T08:09:50Z' #CMT v0.38.0-alpha.2 - rotating
+left_end = '2024-04-03T07:50:00Z' #CMT v1.0.0-alpha.2 - rotating
 
 #left_end = '2023-05-25T18:18:04Z' #CMT v0.38.0-alpha.2 - ve baseline
 #left_end = '2023-05-30T19:05:32Z' #CMT v0.38.0-alpha.2 - ve 2k
-left_end = '2023-05-30T20:44:46Z' #CMT v0.38.0-alpha.2 - ve 4k
+#left_end = '2023-05-30T20:44:46Z' #CMT v0.38.0-alpha.2 - ve 4k
 #left_end = '2023-05-25T19:42:08Z' #CMT v0.38.0-alpha.2 - ve 8k
 #left_end = '2023-05-26T00:28:12Z' #CMT v0.38.0-alpha.2 - ve 16k
 #left_end = '2023-05-26T02:12:27Z' #CMT v0.38.0-alpha.2 - ve 32k
@@ -96,9 +99,9 @@ queries200Nodes = [
 ]
 
 queriesRotating = [
-    (( 'rate(' + fork + '_consensus_height[20s])*60',    time_window[0], time_window[1], '1s'), 'rotating_block_rate',    dict(ylabel='blocks/min',     xlabel='time', title='Rate of Block Creation',         legend=False, figsize=(10,6), grid=True), False),
+    (( 'rate(' + fork + '_consensus_height[20s])*60<1000>0',    time_window[0], time_window[1], '1s'), 'rotating_block_rate',    dict(ylabel='blocks/min',     xlabel='time', title='Rate of Block Creation',         legend=False, figsize=(10,6), grid=True), False),
     (( 'rate(' + fork + '_consensus_total_txs[20s])*60', time_window[0], time_window[1], '1s'), 'rotating_txs_rate',      dict(ylabel='TXs/min',        xlabel='time', title='Rate of Transaction processing', legend=False, figsize=(10,6), grid=True), False),
-    (( fork + '_consensus_height{job=~"ephemeral.*"} or ' + fork + '_blocksync_latest_block_height{job=~"ephemeral.*"}',
+    (( fork + '_consensus_height{job=~"ephemeral.*"}>' + fork + '_blocksync_latest_block_height{job=~"ephemeral.*"} or ' + fork + '_blocksync_latest_block_height{job=~"ephemeral.*"}',
                                                          time_window[0], time_window[1], '1s'), 'rotating_eph_heights',   dict(ylabel='height',         xlabel='time', title='Heights of Ephemeral Nodes',     legend=False, figsize=(10,6), grid=True), False),
     (( fork + '_p2p_peers',                              time_window[0], time_window[1], '1s'), 'rotating_peers',         dict(ylabel='# peers',        xlabel='time', title='Peers',                          legend=False, figsize=(10,6), grid=True), False),
     (( 'avg(process_resident_memory_bytes)',             time_window[0], time_window[1], '1s'), 'rotating_avg_memory',    dict(ylabel='memory (bytes)', xlabel='time', title='Average Memory Usage',           legend=False, figsize=(10,6), grid=True), False),
@@ -122,8 +125,8 @@ queriesVExtension= [
 ]
 
 #queries = queries200Nodes
-#queries = queriesRotating
-queries = queriesVExtension
+queries = queriesRotating
+#queries = queriesVExtension
 
 
 for (query, file_name, pandas_params, plot_average) in queries:
