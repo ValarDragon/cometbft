@@ -60,24 +60,27 @@ next QA tests to be performed for a future release.
 
 ## Storage optimizations
 
-We have conducted several experiments aimed to address significant concerns regarding storage
-efficiency and performance of CometBFT. These experiments focused on various aspects, including the
-effectiveness of pruning mechanisms, the impact of different database key layouts, and the
-performance of alternative database engines like PebbleDB. 
+We have conducted several experiments aimed to address concerns regarding storage efficiency and
+performance of CometBFT. These experiments focused on various aspects, including the effectiveness
+of the pruning mechanism, the impact of different database key layouts, and the performance of
+alternative database engines like PebbleDB. Check out the full report [here](../storage/README.md).
 
-Although we have run the experiments on a version of CometBFT based on `v1.0.0-alpha.1`, the results
-equally apply to `v1.0.0-alpha.2`. The main difference between both versions is PBTS, which does not
-affect the storage performance. Check out the full report [here](../storage/README.md).
+The experiments were performed on different versions of CometBFT. Of interest for this report are
+the those where we targeted a version based on `v1.0.0-alpha.1`. The main difference with
+`v1.0.0-alpha.2` is PBTS, which does not affect storage performance. Therefore, we consider that the
+obtained results equally apply to `v1.0.0-alpha.2`. In particular, both versions contain the data
+companion API, background pruning, compaction, and support for different key layouts. 
 
-The results indicate that while pruning alone was ineffective in controlling storage growth,
-combining pruning with forced compaction proved to be an effective strategy. Additionally,
-experiments reveal mixed results regarding the impact of different database key layouts on
-performance, with some scenarios showing improvements in block processing times and storage
-efficiency, particularly when utilizing the new key layout. However, further analysis suggests that
-the benefits of the new layout were not consistently realized across different environments,
-prompting the CometBFT team to designate support for the new key layout as purely experimental.
-Moreover, tests with PebbleDB showcased promising performance improvements, with superior handling
-of compaction without the need for manual intervention. 
+Briefly, the results relevant to `v1` indicate that:
+- While pruning alone was ineffective in controlling storage growth, combining pruning with forced
+  compaction proved to be an effective strategy.
+- Experiments reveal mixed results regarding the impact of different database key layouts on
+  performance, with some scenarios showing improvements in block processing times and storage
+  efficiency, particularly when utilizing the new key layout. However, further analysis suggests
+  that the benefits of the new layout were not consistently realized across different environments,
+  prompting us to designate the new key layout as purely experimental.
+- Tests with PebbleDB showcased promising performance improvements, with superior handling of
+  compaction without the need for manual intervention. 
 
 ## Table of Contents
 - [Saturation point](#saturation-point)
